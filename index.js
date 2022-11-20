@@ -3,16 +3,6 @@ const inquirer = require('inquirer');
 const db = require('./db')
 require('console.table')
 
-// const db = mysql.createConnection(
-//     {
-//       host: 'localhost',
-//       user: process.env.DB_USER,
-//       password: process.env.DB_PASSWORD,
-//       database: process.env.DB_NAME
-//     },
-//     console.log(`Connected to the company_db database.`)
-//   );
-
 // ----Add Department---- //
 const addDepartmentQuestion = [
     {
@@ -26,7 +16,7 @@ function addDepartment() {
     inquirer
         .prompt(addDepartmentQuestion)
         .then((data) => {
-            // insertDepartment(data)
+            db.insertDepartment(data)
         })
         .then(() => askMenu())
 }
@@ -37,17 +27,17 @@ const addRoleQuestion = [
     {
         type: 'input',
         message: 'What is the name of the role?',
-        name: 'roleName'
+        name: 'title'
     },
     {
         type: 'input',
         message: 'What is the salary of the role?',
-        name: 'roleSalary'
+        name: 'salary'
     },
     {
         type: 'list',
         message: 'Which department does the role belong to?',
-        name: 'roleDepartment',
+        name: 'department_id',
         choices: ['Engineering', 'Finance', 'Legal', 'Sales']
     }
 ]
@@ -56,7 +46,9 @@ function addRole() {
     inquirer
         .prompt(addRoleQuestion)
         .then((data) => {
-            console.log('Added ' + data.roleName + ' to the database')
+            // console.log('Added ' + data.roleName + ' to the database')
+            db.insertRole(data)
+            console.log(data)
         })
         .then(() => askMenu())
 }
@@ -100,23 +92,13 @@ const menuQuestion = [
     }
 ]
 
-// function viewAllEmployees() {
-//     return db.promise().query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id=role.id LEFT JOIN department ON role.department_id=department.id LEFT JOIN employee manager ON manager.id = employee.manager_id;')
-// }
-
-// function insertDepartment(department){
-//     return db.promise().query('INSERT INTO department SET ?', department)
-// }
-
 function askMenu() {
     inquirer
         .prompt(menuQuestion)
         .then((data) => {
             if (data.menuQuestion === 'View All Employees') {
-                // console.log('View All Employees')
                 db.viewAllEmployees().then((employeeData) => {
                     console.table(employeeData[0])
-                    // console.log(employeeData)
                    
                 }).then(()=> askMenu())
             }
@@ -130,18 +112,22 @@ function askMenu() {
             }
             if (data.menuQuestion === 'View All Roles') {
                 console.log('View All Roles')
-                // viewAllRoles()
+                db.viewAllRoles().then((roleData) => {
+                    console.table(roleData[0])
+                   
+                }).then(()=> askMenu())
             }
             if (data.menuQuestion === 'Add Role') {
-                // console.log('Add Role')
                 addRole()
             }
             if (data.menuQuestion === 'View All Departments') {
                 console.log('View All Departments')
-                // viewAllDepartments()
+                db.viewAllDepartments().then((departmentData) => {
+                    console.table(departmentData[0])
+                   
+                }).then(()=> askMenu())
             }
             if (data.menuQuestion === 'Add Department') {
-                // console.log('Add Department')
                 addDepartment()
             }
             if (data.menuQuestion === 'Quit') {
