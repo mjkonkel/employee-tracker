@@ -1,25 +1,24 @@
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
-
-require('dotenv').config();
+// const mysql = require('mysql2');
+const db = require('./db')
 require('console.table')
 
-const db = mysql.createConnection(
-    {
-      host: 'localhost',
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME
-    },
-    console.log(`Connected to the company_db database.`)
-  );
+// const db = mysql.createConnection(
+//     {
+//       host: 'localhost',
+//       user: process.env.DB_USER,
+//       password: process.env.DB_PASSWORD,
+//       database: process.env.DB_NAME
+//     },
+//     console.log(`Connected to the company_db database.`)
+//   );
 
 // ----Add Department---- //
 const addDepartmentQuestion = [
     {
         type: 'input',
         message: 'What is the name of the department?',
-        name: 'addDepartment'
+        name: 'name'
     }
 ]
 
@@ -27,7 +26,7 @@ function addDepartment() {
     inquirer
         .prompt(addDepartmentQuestion)
         .then((data) => {
-            console.log('Added ' + data.addDepartment + ' to the database')
+            // insertDepartment(data)
         })
         .then(() => askMenu())
 }
@@ -63,7 +62,7 @@ function addRole() {
 }
 // ----Add Role---- //
 
-
+// ----Add Employee---- //
 const addEmployeeQuestion =[
     {
         type: 'input',
@@ -77,16 +76,14 @@ const addEmployeeQuestion =[
     },
 ]
 
-// add employee
-// What is the employee's first name?
-// What is the employee's last name?
 // What is the employee's role?
 // Who is the employee's manager? (with none option)
 // log added 'employee' to the database
-function addEmployee() {
-    inquirer
-    .prompt(addEmployeeQuestion)
-}
+// function addEmployee() {
+//     inquirer
+//     .prompt(addEmployeeQuestion)
+// }
+// ----Add Employee---- //
 
 // update employee role
 // Which employee's role do you want to update?
@@ -103,9 +100,13 @@ const menuQuestion = [
     }
 ]
 
-function viewAllEmployees() {
-    return db.promise().query('SELECT * FROM employee')
-}
+// function viewAllEmployees() {
+//     return db.promise().query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id=role.id LEFT JOIN department ON role.department_id=department.id LEFT JOIN employee manager ON manager.id = employee.manager_id;')
+// }
+
+// function insertDepartment(department){
+//     return db.promise().query('INSERT INTO department SET ?', department)
+// }
 
 function askMenu() {
     inquirer
@@ -113,11 +114,11 @@ function askMenu() {
         .then((data) => {
             if (data.menuQuestion === 'View All Employees') {
                 // console.log('View All Employees')
-                viewAllEmployees().then((employeeData) => {
+                db.viewAllEmployees().then((employeeData) => {
                     console.table(employeeData[0])
                     // console.log(employeeData)
-                    askMenu();
-                })
+                   
+                }).then(()=> askMenu())
             }
             if (data.menuQuestion === 'Add Employee') {
                 console.log('Add Employee')
