@@ -1,5 +1,4 @@
 const inquirer = require('inquirer');
-// const mysql = require('mysql2');
 const db = require('./db')
 require('console.table')
 
@@ -17,41 +16,46 @@ function addDepartment() {
         .prompt(addDepartmentQuestion)
         .then((data) => {
             db.insertDepartment(data)
+            console.log('Added ' + data.name + ' to the database')
         })
         .then(() => askMenu())
 }
 // ----Add Department---- //
 
 // ----Add Role---- //
-const addRoleQuestion = [
-    {
-        type: 'input',
-        message: 'What is the name of the role?',
-        name: 'title'
-    },
-    {
-        type: 'input',
-        message: 'What is the salary of the role?',
-        name: 'salary'
-    },
-    {
-        type: 'list',
-        message: 'Which department does the role belong to?',
-        name: 'department_id',
-        choices: ['Engineering', 'Finance', 'Legal', 'Sales']
-    }
-]
-
 function addRole() {
-    inquirer
-        .prompt(addRoleQuestion)
-        .then((data) => {
-            // console.log('Added ' + data.roleName + ' to the database')
-            db.insertRole(data)
-            console.log(data)
-        })
-        .then(() => askMenu())
-}
+    db.viewAllDepartments().then(([rows]) => {
+      let departments = rows;
+      const departmentChoices = departments.map(({ id, name }) => ({
+        name: name,
+        value: id,
+      }));
+  
+      inquirer
+        .prompt([
+          {
+            name: "title",
+            message: "What is the name of the role?",
+          },
+          {
+            name: "salary",
+            message: "What is the salary of the role?",
+          },
+          {
+            type: "list",
+            name: "department_id",
+            message: "Which department does the role belong to?",
+            choices: departmentChoices,
+          },
+        ])
+        .then((role) => {
+          console.log(role);
+          db.insertRole(role)
+            .then(() => console.log(`Added ${role.title} to the database`))
+            .then(() => askMenu());
+        });
+    });
+  }
 // ----Add Role---- //
 
 // ----Add Employee---- //
