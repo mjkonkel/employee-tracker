@@ -25,54 +25,84 @@ function addDepartment() {
 // ----Add Role---- //
 function addRole() {
     db.viewAllDepartments().then(([rows]) => {
-      let departments = rows;
-      const departmentChoices = departments.map(({ id, name }) => ({
-        name: name,
-        value: id,
-      }));
-  
-      inquirer
-        .prompt([
-          {
-            name: "title",
-            message: "What is the name of the role?",
-          },
-          {
-            name: "salary",
-            message: "What is the salary of the role?",
-          },
-          {
-            type: "list",
-            name: "department_id",
-            message: "Which department does the role belong to?",
-            choices: departmentChoices,
-          },
-        ])
-        .then((role) => {
-          console.log(role);
-          db.insertRole(role)
-            .then(() => console.log(`Added ${role.title} to the database`))
-            .then(() => askMenu());
-        });
+        let departments = rows;
+        const departmentChoices = departments.map(({ id, name }) => ({
+            name: name,
+            value: id,
+        }));
+
+        inquirer
+            .prompt([
+                {
+                    name: "title",
+                    message: "What is the name of the role?",
+                },
+                {
+                    name: "salary",
+                    message: "What is the salary of the role?",
+                },
+                {
+                    type: "list",
+                    name: "department_id",
+                    message: "Which department does the role belong to?",
+                    choices: departmentChoices,
+                },
+            ])
+            .then((role) => {
+                db.insertRole(role)
+                    .then(() => console.log(`Added ${role.title} to the database`))
+                    .then(() => askMenu());
+            });
     });
-  }
+}
 // ----Add Role---- //
 
 // ----Add Employee---- //
-const addEmployeeQuestion =[
-    {
-        type: 'input',
-        message: 'What is the employee\'s first name?',
-        name: 'firstName'
-    },
-    {
-        type: 'input',
-        message: 'What is the employee\'s last name?',
-        name: 'lastName'
-    },
-]
+function addEmployee() {
+    db.viewAllRoles().then(([rows]) => {
+        let roles = rows;
+        const roleChoices = roles.map(({id, title}) => {
+            return {
+                name: title,
+                value: id,
+            };
+        })
+        console.log(roleChoices)
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    message: 'What is the employee\'s first name?',
+                    name: 'first_name'
+                },
+                {
+                    type: 'input',
+                    message: 'What is the employee\'s last name?',
+                    name: 'last_name'
+                },
+                {
+                    type: 'list',
+                    message: 'What is the employee\'s role?',
+                    name: 'role_id',
+                    choices: roleChoices,
+                },
+                // {
+                //     type: 'list',
+                //     message: 'Who is the employee\'s manager?',
+                //     name: 'manager_id',
+                //     // choices: ,
+                // },
+            ])
+            .then((employee) => {
+                console.log(employee);
+                db.insertEmployee(employee)
+                    .then(() => console.log(`Added ${employee.first_name} to the database`))
+                    .then(() => askMenu());
+            });
+    })
+};
 
-// What is the employee's role?
+
 // Who is the employee's manager? (with none option)
 // log added 'employee' to the database
 // function addEmployee() {
@@ -103,23 +133,22 @@ function askMenu() {
             if (data.menuQuestion === 'View All Employees') {
                 db.viewAllEmployees().then((employeeData) => {
                     console.table(employeeData[0])
-                   
-                }).then(()=> askMenu())
+
+                }).then(() => askMenu())
             }
             if (data.menuQuestion === 'Add Employee') {
                 console.log('Add Employee')
-                // addEmployee()
+                addEmployee()
             }
             if (data.menuQuestion === 'Update Employee Role') {
                 console.log('Update Employee Role')
                 // updateEmployeeRole()
             }
             if (data.menuQuestion === 'View All Roles') {
-                console.log('View All Roles')
                 db.viewAllRoles().then((roleData) => {
                     console.table(roleData[0])
-                   
-                }).then(()=> askMenu())
+
+                }).then(() => askMenu())
             }
             if (data.menuQuestion === 'Add Role') {
                 addRole()
@@ -128,14 +157,14 @@ function askMenu() {
                 console.log('View All Departments')
                 db.viewAllDepartments().then((departmentData) => {
                     console.table(departmentData[0])
-                   
-                }).then(()=> askMenu())
+
+                }).then(() => askMenu())
             }
             if (data.menuQuestion === 'Add Department') {
                 addDepartment()
             }
             if (data.menuQuestion === 'Quit') {
-                askMenu()
+                process.exit()
             }
         })
 }

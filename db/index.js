@@ -37,6 +37,10 @@ class Query {
     insertRole(role) {
         return this.db.promise().query('INSERT INTO role SET ?', role)
     }
+
+    insertEmployee(employee) {
+        return this.db.promise().query('INSERT INTO role SET ?', employee)
+    }
 }
 
 module.exports = new Query(db)
