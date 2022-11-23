@@ -6,7 +6,15 @@ This repo contains code for challenge 12 of the bootcamp. For this challenge we 
 ## Installation
 To install the necessary dependencies, run `npm i` in the command line.
 
+## Video Link
+[Link to app demonstration](https://app.castify.com/view/c0ffe6d3-1944-417a-8055-adb9b86773a2)
+
 ## Usage
+
+- To begin using the app, log into mysql using the command `mysql -u root -p`<br>
+- To create the database run `source db/schema.sql`<br>
+- This app also contains a seeds file which can be accessed by running `source db/seeds.sql`
+
 >Start the app by running `node index.js` in the command line.<br>
 >This will start inquirer and show the different actions that can be done using the app.<br>
 >![menu](./images/menu.JPG)<br>

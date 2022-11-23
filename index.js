@@ -67,7 +67,15 @@ function addEmployee() {
                 value: id,
             };
         })
-        console.log(roleChoices)
+        // console.log(roleChoices)
+        db.viewAllManagers().then(([rows]) => {
+            let managers = rows;
+            const managerChoices = managers.map(({id, first_name}) => {
+                return {
+                    name: first_name,
+                    value: id,
+                }
+            })
         inquirer
             .prompt([
                 {
@@ -86,29 +94,24 @@ function addEmployee() {
                     name: 'role_id',
                     choices: roleChoices,
                 },
-                // {
-                //     type: 'list',
-                //     message: 'Who is the employee\'s manager?',
-                //     name: 'manager_id',
-                //     // choices: ,
-                // },
+                {
+                    type: 'list',
+                    message: 'Who is the employee\'s manager?',
+                    name: 'manager_id',
+                    choices: managerChoices,
+                },
             ])
             .then((employee) => {
-                console.log(employee);
+                // console.log(employee);
                 db.insertEmployee(employee)
                     .then(() => console.log(`Added ${employee.first_name} to the database`))
                     .then(() => askMenu());
             });
+        })
     })
 };
-
-
 // Who is the employee's manager? (with none option)
 // log added 'employee' to the database
-// function addEmployee() {
-//     inquirer
-//     .prompt(addEmployeeQuestion)
-// }
 // ----Add Employee---- //
 
 // update employee role
@@ -137,11 +140,10 @@ function askMenu() {
                 }).then(() => askMenu())
             }
             if (data.menuQuestion === 'Add Employee') {
-                console.log('Add Employee')
                 addEmployee()
             }
             if (data.menuQuestion === 'Update Employee Role') {
-                console.log('Update Employee Role')
+                // console.log('Update Employee Role')
                 // updateEmployeeRole()
             }
             if (data.menuQuestion === 'View All Roles') {
@@ -154,7 +156,6 @@ function askMenu() {
                 addRole()
             }
             if (data.menuQuestion === 'View All Departments') {
-                console.log('View All Departments')
                 db.viewAllDepartments().then((departmentData) => {
                     console.table(departmentData[0])
 
