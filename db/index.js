@@ -30,16 +30,23 @@ class Query {
         return this.db.promise().query('SELECT role.id, role.title, role.salary, department.name AS department FROM role LEFT JOIN department ON role.department_id=department.id ')
     }
 
+    viewAllManagers() {
+        return this.db.promise().query('SELECT CONCAT(employee.first_name, " ", employee.last_name) AS manager FROM employee')
+    }
+
     insertDepartment(department) {
+        // console.log(department)
         return this.db.promise().query('INSERT INTO department SET ?', department)
     }
 
     insertRole(role) {
+        // console.log(role)
         return this.db.promise().query('INSERT INTO role SET ?', role)
     }
 
     insertEmployee(employee) {
-        return this.db.promise().query('INSERT INTO role SET ?', employee)
+        // console.log(employee)
+        return this.db.promise().query('INSERT INTO employee SET ?', employee)
     }
 }
 
